@@ -14,9 +14,16 @@ async fn main() {
                 .unwrap(),
         )
         .init();
+    let (prometheus_layer, metric_handle) = axum_prometheus::PrometheusMetricLayer::pair();
+
     // build our application with a route
     let app = axum::Router::new()
         .route("/", axum::routing::get(handler))
+        .route(
+            "/metrics",
+            axum::routing::get(|| async move { metric_handle.render() }),
+        )
+        .layer(prometheus_layer)
         // `TraceLayer` is provided by tower-http so you have to add that as a dependency.
         // It provides good defaults but is also very customizable.
         //
