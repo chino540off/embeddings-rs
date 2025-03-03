@@ -1,18 +1,13 @@
 mod logging;
+mod metrics;
 
 #[tokio::main]
 async fn main() {
-    let (prometheus_layer, metric_handle) = axum_prometheus::PrometheusMetricLayer::pair();
-
     // build our application with a route
     let app = axum::Router::new()
         .merge(logging::router())
-        .route("/", axum::routing::get(handler))
-        .route(
-            "/metrics",
-            axum::routing::get(|| async move { metric_handle.render() }),
-        )
-        .layer(prometheus_layer);
+        .merge(metrics::router())
+        .route("/", axum::routing::get(handler));
 
     // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
