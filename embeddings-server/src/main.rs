@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 mod embeddings;
 mod logging;
 mod metrics;
@@ -6,9 +8,20 @@ mod metrics;
 async fn main() {
     logging::init();
 
+    let model = fastembed::TextEmbedding::try_new(
+        fastembed::InitOptions::new(fastembed::EmbeddingModel::AllMiniLML6V2)
+            .with_cache_dir(PathBuf::from("/tmp"))
+            .with_execution_providers(vec![
+                ort::execution_providers::cuda::CUDAExecutionProvider::default().build(),
+                ort::execution_providers::cpu::CPUExecutionProvider::default().build(),
+            ])
+            .with_show_download_progress(false),
+    )
+    .unwrap();
+
     // build our application with a route
     let app = axum::Router::new()
-        .merge(embeddings::router("model"))
+        .merge(embeddings::router(model))
         .merge(metrics::router())
         .layer(logging::layer());
 
