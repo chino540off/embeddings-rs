@@ -1,4 +1,5 @@
 pub fn router() -> axum::Router {
+    println!(env!("CARGO_CRATE_NAME"));
     tracing_subscriber::fmt()
         // This allows you to use, e.g., `RUST_LOG=info` or `RUST_LOG=debug`
         // when running the app to set log levels.
