@@ -4,11 +4,13 @@ mod metrics;
 
 #[tokio::main]
 async fn main() {
+    logging::init();
+
     // build our application with a route
     let app = axum::Router::new()
-        .merge(logging::router())
+        .merge(embeddings::router("model"))
         .merge(metrics::router())
-        .merge(embeddings::router("model"));
+        .layer(logging::layer());
 
     // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
