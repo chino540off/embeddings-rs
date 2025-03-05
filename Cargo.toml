@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["embeddings-server"]
+members = [ "candle-bert-cli","embeddings-server"]

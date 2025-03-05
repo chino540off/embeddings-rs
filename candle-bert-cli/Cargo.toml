@@ -1,0 +1,33 @@
+[package]
+name = "candle-bert-cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+#intel-mkl-src = { version = "0.8" }
+#accelerate-src = { version = "0.3" }
+anyhow = { version = "1.0", features = ["backtrace"] }
+candle-core = { version = "0.8", features = [
+  "accelerate",
+  #"cuda",
+  #"cudnn",
+  "metal",
+  #"mkl",
+] }
+candle-nn = { version = "0.8", features = [
+  "accelerate",
+  #"cuda",
+  "metal",
+  #"mkl",
+] }
+candle-transformers = { version = "0.8" }
+clap = { version = "4.5", features = ["derive"] }
+hf-hub = { version = "0.4", features = ["tokio"] }
+tokenizers = { version = "0.21", features = ["onig"] }
+serde_json = { version = "1.0" }
+
+tracing = "0.1"
+tracing-chrome = "0.7"
+tracing-subscriber = "0.3"
+[features]
+default = []
