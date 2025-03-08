@@ -1,6 +1,8 @@
 use axum::response::IntoResponse;
 use utoipa::OpenApi;
 
+use crate::model;
+
 const TAG: &str = "embeddings";
 
 #[derive(utoipa::OpenApi)]
@@ -47,10 +49,10 @@ struct EmbeddingResponse {
         )
     )]
 async fn compute(
-    axum::extract::State(model): axum::extract::State<std::sync::Arc<fastembed::TextEmbedding>>,
+    axum::extract::State(model): axum::extract::State<std::sync::Arc<model::Bert>>,
     axum::Json(request): axum::Json<EmbeddingRequest>,
 ) -> impl axum::response::IntoResponse {
-    match model.embed(request.input, None) {
+    match model.embed(request.input) {
         Ok(embeddings) => axum::Json(EmbeddingResponse {
             embeddings: embeddings
                 .iter()
@@ -65,7 +67,7 @@ async fn compute(
     }
 }
 
-pub fn router(model: fastembed::TextEmbedding) -> axum::Router {
+pub fn router(model: model::Bert) -> axum::Router {
     let model = std::sync::Arc::new(model);
     let (router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest(
