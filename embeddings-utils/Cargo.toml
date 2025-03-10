@@ -1,0 +1,12 @@
+[package]
+name = "embeddings-utils"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+base64 = { version = "0.22" }
+serde = { version = "1.0" }
+
+# standard crate data is left out
+[dev-dependencies]
+rstest = "0.25"
