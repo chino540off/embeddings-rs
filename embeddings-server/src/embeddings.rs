@@ -1,9 +1,17 @@
 use axum::response::IntoResponse;
+use embeddings_utils::encoding::Encode;
 use utoipa::OpenApi;
 
 use crate::model;
 
 const TAG: &str = "embeddings";
+
+#[derive(serde::Serialize, utoipa::ToSchema, Clone)]
+#[serde(untagged)]
+pub enum EncodedData {
+    Float(Vec<f32>),
+    Base64(String),
+}
 
 #[derive(utoipa::OpenApi)]
 #[openapi(
@@ -24,12 +32,18 @@ struct EmbeddingRequest {
 
 #[derive(serde::Serialize, utoipa::ToSchema, Clone)]
 struct Embedding {
-    embedding: Vec<f32>,
+    embedding: EncodedData,
 }
 
 impl Embedding {
-    fn new(embedding: Vec<f32>) -> Self {
-        Embedding { embedding }
+    fn new(embedding: Vec<f32>, encoding_format: &str) -> Self {
+        Embedding {
+            embedding: match encoding_format {
+                "float" => EncodedData::Float(Vec::<f32>::encode(embedding)),
+                "base64" => EncodedData::Base64(String::encode(embedding)),
+                &_ => todo!("not implemented"),
+            },
+        }
     }
 }
 
@@ -56,7 +70,7 @@ async fn compute(
         Ok(embeddings) => axum::Json(EmbeddingResponse {
             embeddings: embeddings
                 .iter()
-                .map(|embedding| Embedding::new(embedding.clone()))
+                .map(|embedding| Embedding::new(embedding.clone(), &request.encoding_format))
                 .collect(),
         })
         .into_response(),

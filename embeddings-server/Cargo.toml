@@ -23,6 +23,8 @@ candle-transformers = { version = "0.8" }
 serde_json = { version = "1.0" }
 tokenizers = { version = "0.21", features = ["onig"] }
 
+embeddings-utils = { path = "../embeddings-utils" }
+
 [features]
 default = []
 accelerate = ["candle-core/accelerate", "candle-nn/accelerate"]
