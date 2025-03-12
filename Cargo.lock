@@ -790,6 +790,7 @@ dependencies = [
  "candle-core",
  "candle-nn",
  "candle-transformers",
+ "clap",
  "embeddings-utils",
  "hf-hub",
  "serde",

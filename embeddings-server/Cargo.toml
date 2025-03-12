@@ -22,6 +22,7 @@ candle-nn = { version = "0.8", features = [] }
 candle-transformers = { version = "0.8" }
 serde_json = { version = "1.0" }
 tokenizers = { version = "0.21", features = ["onig"] }
+clap = { version = "4.5", features = ["derive"] }
 
 embeddings-utils = { path = "../embeddings-utils" }
 
