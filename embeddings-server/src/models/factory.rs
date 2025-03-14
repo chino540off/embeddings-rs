@@ -1,38 +1,4 @@
-pub struct Bert {
-    model: candle_transformers::models::bert::BertModel,
-    tokenizer: tokenizers::Tokenizer,
-    device: candle_core::Device,
-}
-
-impl Bert {
-    fn apply_max_pooling(embeddings: &candle_core::Tensor) -> anyhow::Result<candle_core::Tensor> {
-        Ok(embeddings.max(1)?)
-    }
-
-    fn l2_normalize(embeddings: &candle_core::Tensor) -> anyhow::Result<candle_core::Tensor> {
-        Ok(embeddings.broadcast_div(&embeddings.sqr()?.sum_keepdim(1)?.sqrt()?)?)
-    }
-
-    pub fn embed(&self, sentences: Vec<String>) -> anyhow::Result<Vec<Vec<f32>>> {
-        let tokens = self
-            .tokenizer
-            .encode_batch(sentences, true)
-            .map_err(anyhow::Error::msg)?;
-        let token_ids = tokens
-            .iter()
-            .map(|tokens| {
-                let tokens = tokens.get_ids().to_vec();
-                Ok(candle_core::Tensor::new(tokens.as_slice(), &self.device)?)
-            })
-            .collect::<anyhow::Result<Vec<_>>>()?;
-        let token_ids = candle_core::Tensor::stack(&token_ids, 0)?;
-        let token_type_ids = token_ids.zeros_like()?;
-        let embeddings = self.model.forward(&token_ids, &token_type_ids, None)?;
-        let embeddings = Self::apply_max_pooling(&embeddings)?;
-        let embeddings = Self::l2_normalize(&embeddings)?;
-        Ok(embeddings.to_vec2::<f32>()?)
-    }
-}
+use crate::models;
 
 pub struct FactoryBuilder {
     model_id: Option<String>,
@@ -133,8 +99,8 @@ impl Factory<'_> {
         }
     }
 
-    pub fn make(self) -> Bert {
-        Bert {
+    pub fn make(self) -> models::Bert {
+        models::Bert {
             model: candle_transformers::models::bert::BertModel::load(self.vb, &self.config)
                 .expect("Cannot load model"),
             tokenizer: self.tokenizer,

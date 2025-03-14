@@ -2,7 +2,8 @@ use axum::response::IntoResponse;
 use embeddings_utils::encoding::Encode;
 use utoipa::OpenApi;
 
-use crate::model;
+use crate::models;
+use crate::models::Embedder;
 
 const TAG: &str = "embeddings";
 
@@ -63,7 +64,7 @@ struct EmbeddingResponse {
         )
     )]
 async fn compute(
-    axum::extract::State(model): axum::extract::State<std::sync::Arc<model::Bert>>,
+    axum::extract::State(model): axum::extract::State<std::sync::Arc<models::Bert>>,
     axum::Json(request): axum::Json<EmbeddingRequest>,
 ) -> impl axum::response::IntoResponse {
     match model.embed(request.input) {
@@ -81,7 +82,7 @@ async fn compute(
     }
 }
 
-pub fn router(model: model::Bert) -> axum::Router {
+pub fn router(model: models::Bert) -> axum::Router {
     let model = std::sync::Arc::new(model);
     let (router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest(
