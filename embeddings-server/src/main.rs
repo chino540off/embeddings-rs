@@ -25,11 +25,10 @@ async fn main() {
     logging::init();
     let args = cmd::Arguments::parse();
 
-    let model = models::Factory::builder()
+    let model = models::builder()
         .with_model_id(&args.model_id)
         .with_revision(&args.model_rev)
-        .build()
-        .make();
+        .build();
 
     match args.command {
         cmd::Commands::Serve { listening_addr } => serve(model, &listening_addr).await,
