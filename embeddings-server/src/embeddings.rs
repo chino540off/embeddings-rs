@@ -85,8 +85,7 @@ async fn compute(
 pub fn router(model: models::Bert) -> axum::Router {
     let model = std::sync::Arc::new(model);
     let (router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest(
-            "/model",
+        .merge(
             utoipa_axum::router::OpenApiRouter::new()
                 .routes(utoipa_axum::routes!(compute))
                 .with_state(model),

@@ -12,7 +12,8 @@ async fn serve(model: models::Bert, listening_addr: &str) {
     let app = axum::Router::new()
         .merge(embeddings::router(model))
         .merge(metrics::router())
-        .layer(logging::layer());
+        .layer(logging::layer())
+        .layer(tower_http::compression::CompressionLayer::new());
 
     // run it
     let listener = tokio::net::TcpListener::bind(listening_addr).await.unwrap();
