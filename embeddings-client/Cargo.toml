@@ -1,0 +1,21 @@
+[package]
+name = "embeddings-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bytes = { version = "1.10" }
+tokio = { version = "1.43", features = ["full"] }
+http = { version = "1.3" }
+hyper-util = { version = "0.1" }
+http-body-util = { version = "0.1" }
+tower = { version = "0.5" }
+tower-http = { version = "0.6", features = [
+  "trace",
+  "decompression-gzip",
+  "decompression-zstd",
+  "set-header",
+  "tracing",
+] }
+
+embeddings-utils = { path = "../embeddings-utils" }

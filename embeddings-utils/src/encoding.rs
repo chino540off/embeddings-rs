@@ -1,5 +1,19 @@
 use base64::Engine;
 
+pub enum Encoding {
+    Float,
+    Base64,
+}
+
+impl Encoding {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Encoding::Float => "float",
+            Encoding::Base64 => "base64",
+        }
+    }
+}
+
 pub trait Decode {
     fn decode(&self) -> Vec<f32>;
 }
@@ -60,5 +74,12 @@ mod tests {
     #[case(vec![1.2,3.4,5.6])]
     fn encode<T: Encode<T> + Debug + PartialEq>(#[case] expected: T) {
         assert_eq!(T::encode(vec![1.2, 3.4, 5.6]), expected);
+    }
+
+    #[rstest::rstest]
+    #[case(Encoding::Float, "float")]
+    #[case(Encoding::Base64, "base64")]
+    fn as_str(#[case] e: Encoding, #[case] expected: &str) {
+        assert_eq!(e.as_str(), expected);
     }
 }
